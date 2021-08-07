@@ -1,0 +1,28 @@
+version: '3.8'
+services:
+    mysql:
+        image: 'mysql:8.0'
+        working_dir: /application
+        env_file:
+            - .env
+        volumes:
+            - '.:/application'
+        ports:
+            - '33060:3306'
+
+    webserver:
+        build:
+            context: .
+            args:
+                PHP_VERSION: ${PHP_VERSION}
+            dockerfile: ./php/Dockerfile
+        depends_on: 
+            - mysql
+        env_file:
+            - .env
+        working_dir: '/var/www/html/'
+        volumes:
+            - './php/php.ini:/usr/local/etc/php/conf.d/custom.ini'
+            - './public:/var/www/html/'
+        ports:
+            - '8080:80'
